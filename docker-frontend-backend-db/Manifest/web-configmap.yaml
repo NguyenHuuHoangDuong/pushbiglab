@@ -1,0 +1,9 @@
+#configuration map 
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-configmap
+  namespace: dev
+data:
+  backend_url: "http://todo.lab/api"

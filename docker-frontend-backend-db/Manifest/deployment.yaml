@@ -1,0 +1,89 @@
+#FRONTEND
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-web-deploy
+  namespace: dev
+  labels:
+    app: frontend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend-deployment
+  template:
+    metadata: 
+      labels:
+        app: frontend-deployment
+    spec:
+      containers:
+        - name: frontend-deployment
+          image: nhhduong112/fe
+          ports:
+            - containerPort: 3000
+          env: 
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: web-configmap
+                  key: backend_url
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-api-deploy
+  namespace: dev
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-deploy
+  template:
+    metadata:
+      labels:
+        app: backend-deploy
+    spec:
+      containers:
+      - name: backend-deploy
+        image: nhhduong112/be
+        resources:
+          requests: #
+            cpu: 20m #
+        ports:
+        - containerPort: 3001
+        env:
+        - name: DbSettings__Server
+          valueFrom:
+            configMapKeyRef:
+              name: api-configmap
+              key: database_url
+        - name: DbSettings__Database
+          valueFrom:
+            configMapKeyRef:
+              name: api-configmap
+              key: database
+        - name: DbSettings__UserId
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-username
+        - name: DbSettings__Password
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-password
+        - name: Api__Protocol
+          valueFrom:
+            configMapKeyRef:
+              name: api-configmap
+              key: api_protocol
+        - name: Api__Host
+          valueFrom:
+            configMapKeyRef:
+              name: api-configmap
+              key: api_host
+        - name: Api__Port
+          valueFrom:
+            configMapKeyRef:
+              name: api-configmap
+              key: api_port

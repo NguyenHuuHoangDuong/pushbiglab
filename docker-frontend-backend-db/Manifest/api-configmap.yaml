@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-configmap
+  namespace: dev
+data:
+  database_url: my-release-mongodb.dev.svc.cluster.local
+  database: "mongodb"
+  api_protocol: http
+  api_host: "0.0.0.0"
+  api_port: "3001"
